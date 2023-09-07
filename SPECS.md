@@ -13,7 +13,7 @@ Uma representação da árvore abstrata de `1 + 2` seria:
   ├── Literal
   │   └── 1
   └── Literal
-      └── 1
+      └── 2
 ```
 
 Ou em JSON da linguagem Rinha
@@ -66,10 +66,12 @@ Onde `..` é um location node que foi ocultado por brevidade.
 
 ### If
 
-`If` é uma estrutura que representa um bloco if/else dentro da linguagem. Ele é usado para tomar decisões com base em uma condição. O formato da estrutura é semelhante ao seguinte exemplo:
+`If` é uma estrutura que representa um bloco if/else dentro da linguagem. Ele é usado para tomar decisões com base em uma condição e sempre retorna um valor, é como se fosse um ternário de JS. O formato da estrutura é semelhante ao seguinte exemplo:
+
+A condição do if deve ser sempre um boolean.
 
 ```javascript
-if true { a } else { b }
+if (true) { a } else { b }
 ```
 
 | Nome       | Tipo     |
@@ -82,12 +84,12 @@ if true { a } else { b }
 
 ### Let
 
-`Let` é uma estrutura que representa um `let in`, ou seja, além de ela conter um let, ela especifica a proxima estrutura
+`Let` é uma estrutura que representa um `let in`, ou seja, além de ela conter um let, ela especifica a proxima estrutura. Todo let pode fazer *shadowing*, ou seja, usar o mesmo nome de outra variável e "ocultar" o valor da variável antiga. 
 
 | Nome       | Tipo     |
 | --------   | -------- |
 | kind       | String   |
-| name       | Var      |
+| name       | Parameter      |
 | value      | Term     |
 | next       | Term     |
 | location   | Location |
@@ -114,7 +116,7 @@ if true { a } else { b }
 
 ### Int (Inteiro)
 
-`Int` é uma estrutura que representa um literal de número inteiro signed. Ela é representada por:
+`Int` é uma estrutura que representa um literal de número inteiro signed que tem tamanho de 32 bits, ou seja um Int32. Ela é representada por:
 
 | Nome       | Tipo     |
 | --------   | -------- |
@@ -126,22 +128,21 @@ if true { a } else { b }
 
 Um `BinaryOp` é um enumerador que representa uma operação binária. Essas são as variantes disponiveis
 
-| Nome       | Descrição        |
-| --------   | ------------     |
-| Add        | Soma             |
-| Sub        | Subtração        |
-| Mul        | Multiplicação    |
-| Div        | Divisão          |
-| Rem        | Resto da divisão |
-| Eq         | Igualdade        |
-| Neq        | Diferente        |
-| Lt         | Menor            |
-| Gt         | Maior            |
-| Lte        | Menor ou igual   |
-| Gte        | Maior ou igual   |
-| And        | Conjunção        |
-| Or         | Disjunção        |
-| Not        | Negação          |
+| Nome       | Descrição        | Exemplos que devem ser válidos                    |
+| --------   | ------------     | ------------------------------------------------- |
+| Add        | Soma             | `3 + 5 = 8`, `"a" + 2 = "a2"`, `2 + "a" = "2a"`, `"a" + "b" = "ab"` |
+| Sub        | Subtração        | `0 - 1 = -1` |
+| Mul        | Multiplicação    | `2 * 2 = 4`  |
+| Div        | Divisão          | `3 / 2 = 1`  |
+| Rem        | Resto da divisão | `4 % 2 = 0`  |
+| Eq         | Igualdade        | `"a" == "a"`, `2 == 1 + 1`, `true == true` |
+| Neq        | Diferente        | `"a" != "b"`, `3 != 1 + 1`, `true != false` |
+| Lt         | Menor            | `1 < 2` |
+| Gt         | Maior            | `2 > 3` |
+| Lte        | Menor ou igual   | `1 <= 2` | 
+| Gte        | Maior ou igual   | `1 >= 2` |
+| And        | Conjunção        | `true && false` |
+| Or         | Disjunção        | `false \|\| true` |
 
 ### Binary (Operação Binária)
 
@@ -154,6 +155,8 @@ Um `BinaryOp` é um enumerador que representa uma operação binária. Essas sã
 | op          | BinaryOp |
 | rhs         | Term     |
 | location    | Location |
+
+
 
 ### Call (Aplicação de função)
 
@@ -168,12 +171,12 @@ Um `BinaryOp` é um enumerador que representa uma operação binária. Essas sã
 
 ### Function (Função anônima)
 
-`Function` é a criação de uma função anônima, ela é representada por:
+`Function` é a criação de uma função anônima que pode capturar o ambiente, ela é representada por:
 
 | Nome        | Tipo     |
 | --------    | -------- |
 | kind        | String   |
-| parameters  | [Var]    |
+| parameters  | [Parameter]    |
 | value       | Term     |
 | location    | Location |
 
@@ -181,26 +184,47 @@ Um `BinaryOp` é um enumerador que representa uma operação binária. Essas sã
 
 `Print` é a chamada da função de printar para o standard output. Ela é definida por:
 
+Exemplos que devem ser válidos: `print(a)`, `print("a")`, `print(2)`, `print(true)`, `print((1, 2))`
+
 | Nome        | Tipo     |
 | --------    | -------- |
 | kind        | String   |
 | value       | Term     |
 | location    | Location |
+
+Os valores devem ser printados como: 
+
+| Tipo    | Como deve ser printado |
+| -----   | ---------------------- |
+| String  | a string sem aspas duplas ex `a` |
+| Number  | o literal de número ex `0` |
+| Boolean | `true` ou `false` |
+| Closure | `<#closure>`    |
+| Tuple   | `(term, term)`  |
 
 ### First (Função de pegar o primeiro elemento de uma tupla)
 
 `First` é uma chamada de função que pega o primeiro elemento de uma tupla. Ela é definida por:
 
+```
+first((1, 2))
+```
+
 | Nome        | Tipo     |
 | --------    | -------- |
 | kind        | String   |
 | value       | Term     |
 | location    | Location |
 
+Quando o first for chamado com algo que não é uma tupla ele deve dar um erro de runtime.
 
 ### Second (Função de pegar o segundo elemento de uma tupla)
 
 `Second` é uma chamada de função que pega o segundo elemento de uma tupla. Ela é definida por:
+
+```
+second((1, 2))
+```
 
 | Nome        | Tipo     |
 | --------    | -------- |
@@ -225,6 +249,17 @@ Ela tem os seguintes elementos:
 | second      | Term     |
 | location    | Location |
 
+Quando o second for chamado com algo que não é uma tupla ele deve dar um erro de runtime.
+
+### Parameter
+
+`Parameter` representa o nome de uma parâmetro. É definida por:
+
+| Nome        | Tipo     |
+| --------    | -------- |
+| text        | String   |
+| location    | Location |
+
 ### Var (Nome de uma variável)
 
 `Var` representa o nome de uma variável. É definida por:
@@ -233,7 +268,7 @@ Ela tem os seguintes elementos:
 | --------    | -------- |
 | kind        | String   |
 | text        | String   |
-| location    | Location |
+| location    | Location | 
 
 ### Term
 
