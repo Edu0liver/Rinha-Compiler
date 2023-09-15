@@ -1,8 +1,11 @@
-export type Val = {
-    string: string;
-    number: number,
-    boolean: boolean,
-    tuple: { f: Val, s: Val };
+export type Val = 
+  { kind: "boolean", value: boolean }
+| { kind: "string", value: string }
+| { kind: "number", value: number }
+| { kind: "tuple", fst: Val, snd: Val };
+
+export type Env = {
+    objects: Record<string, Val>
 }
 
 export type File = {
@@ -23,27 +26,27 @@ export type Parameter = {
 }
 
 export type Var = {
-    kind: string,
+    kind: 'Var',
     text: string,
     location: Location,
 }
 
 export type Function = {
-    kind: string,
+    kind: 'Function',
     parameters: Parameter[],
     value: Term,
     location: Location,
 }
 
 export type Call = {
-    kind: string,
+    kind: 'Call',
     callee: Term,
     arguments: Term[],
     location: Location,
 }
 
 export type Let = {
-    kind: string,
+    kind: 'Let',
     name: Parameter,
     value: Term,
     next: Term
@@ -51,13 +54,13 @@ export type Let = {
 }
 
 export type Str = {
-    kind: string,
+    kind: 'Str',
     value: string,
     location: Location,
 }
 
 export type Int = {
-    kind: string,
+    kind: 'Int',
     value: number,
     location: Location,
 }
@@ -79,13 +82,13 @@ export enum BinaryOp {
 }
 
 export type Bool = {
-    kind: string,
+    kind: 'Bool',
     value: boolean,
     location: Location,
 }
 
 export type If = {
-    kind: string,
+    kind: 'If',
     condition: Term,
     then: Term,
     otherwise: Term,
@@ -93,7 +96,7 @@ export type If = {
 }
 
 export type Binary = {
-    kind: string,
+    kind: 'Binary',
     lhs: Term,
     op: BinaryOp,
     rhs: Term,
@@ -101,26 +104,26 @@ export type Binary = {
 }
 
 export type Tuple = {
-    kind: string,
+    kind: 'Tuple',
     first: Term,
     second: Term,
     location: Location,
 }
 
 export type First = {
-    kind: string,
+    kind: 'First',
     value: Term,
     location: Location,
 }
 
 export type Second = {
-    kind: string,
+    kind: 'Second',
     value: Term,
     location: Location,
 }
 
 export type Print = {
-    kind: string,
+    kind: 'Print',
     value: Term,
     location: Location,
 }
