@@ -16,26 +16,45 @@ export class Interpreter {
                 return { kind: "boolean", value: term.value }
             case 'Int':
                 return { kind: "number", value: term.value }
-            case 'If':
-                
-            case 'Tuple':
-                
-            case 'First':
-                
-            case 'Second':
-                
-            case 'Binary':
-                
             case 'Print':
+                let value = this.interpret(term.value, env);
+                console.log(this.showValue(value))
+                return value
+            // case 'If':
                 
-            case 'Var':
+            // case 'Tuple':
                 
-            case 'Let':
+            // case 'First':
                 
-            case 'Call':
+            // case 'Second':
                 
-            case 'Function':
+            // case 'Binary':
+
+            // case 'Var':
                 
+            // case 'Let':
+                
+            // case 'Call':
+                
+            // case 'Function':
+
+            default: 
+                return { kind: "void",  value: null}
+        }
+    }
+
+    showValue(value: Val): string {
+        switch (value.kind) {
+            case "number":
+                return value.value.toString()
+            case "boolean":
+                return value.value ? "true" : "false"
+            case "string":
+                return value.value
+            case "tuple":
+                return `(${this.showValue(value.fst)},${this.showValue(value.snd)})`
+            default:
+                return ""
         }
     }
 }

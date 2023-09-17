@@ -2,7 +2,8 @@ export type Val =
   { kind: "boolean", value: boolean }
 | { kind: "string", value: string }
 | { kind: "number", value: number }
-| { kind: "tuple", fst: Val, snd: Val };
+| { kind: "tuple", fst: Val, snd: Val }
+| { kind: "void", value: null };
 
 export type Env = {
     objects: Record<string, Val>
