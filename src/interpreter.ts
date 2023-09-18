@@ -29,8 +29,7 @@ export class Interpreter {
                 return this.interpretBinary(this.interpret(term.lhs, memory), this.interpret(term.rhs, memory), term.op)
                 
             case 'If':
-                if (this.assertBoolean(this.interpret(term.condition, memory))) return this.interpret(term.then, memory)
-                else return this.interpret(term.otherwise, memory)
+                return this.assertBoolean(this.interpret(term.condition, memory)) ? this.interpret(term.then, memory) : this.interpret(term.otherwise, memory)
                 
             case 'Tuple':
                 return {
