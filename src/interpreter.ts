@@ -29,7 +29,7 @@ export class Interpreter {
                 return this.interpretBinary(this.interpret(term.lhs, env), this.interpret(term.rhs, env), term.op)
                 
             case 'If':
-                if (this.interpret(term.condition, env)) return this.interpret(term.then, env)
+                if (this.assertBoolean(this.interpret(term.condition, env))) return this.interpret(term.then, env)
                 else return this.interpret(term.otherwise, env)
                 
             case 'Tuple':
@@ -45,9 +45,20 @@ export class Interpreter {
             case 'Second':
                 return this.interpret(term.value, env)
 
-            // case 'Var':
+            case 'Var':{
+                let value = env.objects[term.text];
+
+                if (value) return value
+                else throw new ErrorInterpreter(`Undefined Var`)
+            }
                 
-            // case 'Let':
+            case 'Let': {
+                let name = term.name.text
+                let value = this.interpret(term.value, env)
+                env.objects[name] = value
+
+                return this.interpret(term.next, env)
+            }
                 
             // case 'Call':
                 
