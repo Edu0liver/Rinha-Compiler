@@ -70,7 +70,25 @@ export class Interpreter {
                     }
                 }
                 
-            case 'Call':
+            case 'Call':{
+                let value = this.interpret(term.callee, memory);
+
+                switch (value.kind) {
+                    case "closure":
+                        for (let [ p_index, param ] of value.value.params.entries()) {
+                            for (let [ a_index, arg ] of term.arguments.entries()) {
+                                if (a_index === p_index) {
+                                    memory[param.text] = this.interpret(arg, memory)
+                                }
+                            }
+                        }
+
+                        return this.interpret(value.value.body, memory)
+
+                    default: 
+                        throw new ErrorInterpreter("Not a function")
+                }
+            }
 
             default: 
                 return { kind: "void",  value: null}
@@ -79,16 +97,10 @@ export class Interpreter {
 
     showValue(value: Val): string {
         switch (value.kind) {
-            case "number":
-                return value.value.toString()
-            case "boolean":
-                return value.value ? "true" : "false"
-            case "string":
-                return value.value
             case "tuple":
                 return `(${this.showValue(value.fst)},${this.showValue(value.snd)})`
             default:
-                return ""
+                return `${value.value}`
         }
     }
 
@@ -153,13 +165,13 @@ export class Interpreter {
 
     assertInt(value: Val): number {
         let int = value.kind === "number" ? value.value : null
-        if (int == null) throw new ErrorInterpreter("Invalid operator")
+        if (int == null) throw new ErrorInterpreter("Invalid operator, int")
         return int
     }
 
     assertBoolean(value: Val): boolean {
         let bool = value.kind === "boolean" ? value.value : null
-        if (bool == null) throw new ErrorInterpreter("Invalid operator")
+        if (bool == null) throw new ErrorInterpreter("Invalid operator, bool")
         return bool
     }
 
@@ -167,13 +179,13 @@ export class Interpreter {
         let lop = left.kind === "boolean" || left.kind === "string" || left.kind === "number" ? { kind: left.kind, value: left.value }: null
         let rop = right.kind === "boolean" || right.kind === "string" || right.kind === "number" ? { kind: right.kind, value: right.value } : null
 
-        if (lop == null) throw new ErrorInterpreter("Invalid operator")
-        if (rop == null) throw new ErrorInterpreter("Invalid operator")
+        if (lop == null) throw new ErrorInterpreter("Invalid operator: lop")
+        if (rop == null) throw new ErrorInterpreter("Invalid operator: rop")
         
         if (lop.kind == rop.kind) {
             return rop.value == lop.value
         }
 
-        throw new ErrorInterpreter("Invalid operation")
+        throw new ErrorInterpreter("Invalid operation, unmatch type")
     }
 }
