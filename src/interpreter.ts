@@ -71,19 +71,15 @@ export class Interpreter {
                 }
                 
             case 'Call':{
-                let value = this.interpret(term.callee, memory);
+                let closure = this.interpret(term.callee, memory);
 
-                switch (value.kind) {
+                switch (closure.kind) {
                     case "closure":
-                        for (let [ p_index, param ] of value.value.params.entries()) {
-                            for (let [ a_index, arg ] of term.arguments.entries()) {
-                                if (a_index === p_index) {
-                                    memory[param.text] = this.interpret(arg, memory)
-                                }
-                            }
+                        for (let [ p_index, param ] of closure.value.params.entries()) {
+                            memory[param.text] = this.interpret(term.arguments[p_index], memory)
                         }
 
-                        return this.interpret(value.value.body, memory)
+                        return this.interpret(closure.value.body, memory)
 
                     default: 
                         throw new ErrorInterpreter("Not a function")

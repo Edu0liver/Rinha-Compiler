@@ -1,4 +1,4 @@
-import json from '../files/combination.json'
+import json from '../files/fib.json'
 import { Interpreter } from './interpreter'
 import { File } from './types';
 
