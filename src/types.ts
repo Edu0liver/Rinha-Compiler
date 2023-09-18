@@ -3,11 +3,16 @@ export type Val =
 | { kind: "string", value: string }
 | { kind: "number", value: number }
 | { kind: "tuple", fst: Val, snd: Val }
+| { kind: "closure", value: ClosureValue }
 | { kind: "void", value: null };
 
-export type Env = {
-    objects: Record<string, Val>
+export type ClosureValue = {
+    body: Term;
+    params: Parameter[]
+    mem: Memory
 }
+
+export type Memory =  Record<string, Val>;
 
 export type File = {
     name: string,

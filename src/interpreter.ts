@@ -1,15 +1,15 @@
 import { ErrorInterpreter } from "./error"
-import { BinaryOp, Env, File, Term, Val } from "./types"
+import { BinaryOp, File, Memory, Term, Val } from "./types"
 
 export class Interpreter {
     constructor(private jsonFile: File) {}
 
     interpreteFile() {
-        let env = { objects: {} }
-        this.interpret(this.jsonFile.expression, env)
+        let memory = {}
+        this.interpret(this.jsonFile.expression, memory)
     }
 
-    interpret(term: Term, env: Env): Val {
+    interpret(term: Term, memory: Memory): Val {
         switch (term.kind) {
             case 'Str':
                 return { kind: "string", value: term.value }
@@ -21,32 +21,32 @@ export class Interpreter {
                 return { kind: "number", value: term.value }
 
             case 'Print':
-                let value = this.interpret(term.value, env);
+                let value = this.interpret(term.value, memory);
                 console.log(this.showValue(value))
                 return value
                 
             case 'Binary':
-                return this.interpretBinary(this.interpret(term.lhs, env), this.interpret(term.rhs, env), term.op)
+                return this.interpretBinary(this.interpret(term.lhs, memory), this.interpret(term.rhs, memory), term.op)
                 
             case 'If':
-                if (this.assertBoolean(this.interpret(term.condition, env))) return this.interpret(term.then, env)
-                else return this.interpret(term.otherwise, env)
+                if (this.assertBoolean(this.interpret(term.condition, memory))) return this.interpret(term.then, memory)
+                else return this.interpret(term.otherwise, memory)
                 
             case 'Tuple':
                 return {
                     kind: "tuple",
-                    fst: this.interpret(term.first, env), 
-                    snd: this.interpret(term.second, env)
+                    fst: this.interpret(term.first, memory), 
+                    snd: this.interpret(term.second, memory)
                 }
                 
             case 'First':
-                return this.interpret(term.value, env)
+                return this.interpret(term.value, memory)
                 
             case 'Second':
-                return this.interpret(term.value, env)
+                return this.interpret(term.value, memory)
 
             case 'Var':{
-                let value = env.objects[term.text];
+                let value = memory[term.text];
 
                 if (value) return value
                 else throw new ErrorInterpreter(`Undefined Var`)
@@ -54,15 +54,23 @@ export class Interpreter {
                 
             case 'Let': {
                 let name = term.name.text
-                let value = this.interpret(term.value, env)
-                env.objects[name] = value
+                let value = this.interpret(term.value, memory)
+                memory[name] = value
 
-                return this.interpret(term.next, env)
+                return this.interpret(term.next, memory)
             }
                 
-            // case 'Call':
+            case 'Function':
+                return {
+                    kind: "closure",
+                    value: {
+                        body: term.value,
+                        params: term.parameters,
+                        mem: memory,
+                    }
+                }
                 
-            // case 'Function':
+            case 'Call':
 
             default: 
                 return { kind: "void",  value: null}
