@@ -1,4 +1,4 @@
-import json from '../files/print.json'
+import json from '../files/sum.json'
 import { Interpreter } from './interpreter'
 import { File } from './types';
 

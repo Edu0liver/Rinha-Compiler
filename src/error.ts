@@ -5,6 +5,6 @@ export class ErrorInterpreter {
         start?: number,
         end?: number,
     ) {
-        throw new Error(`${message}\n${start ? `start: ${start}` : `` }\n${end ? `end: ${end}` : `` }`)
+        console.log(`${message}\n${start ? `start: ${start}` : `` }\n${end ? `end: ${end}` : `` }`)
     }
 }

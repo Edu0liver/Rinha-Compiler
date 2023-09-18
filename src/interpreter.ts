@@ -26,7 +26,7 @@ export class Interpreter {
                 return value
                 
             case 'Binary':
-                return this.interpretBinary(term.lhs, term.rhs, term.op)
+                return this.interpretBinary(this.interpret(term.lhs, env), this.interpret(term.rhs, env), term.op)
                 
             case 'If':
                 if (this.interpret(term.condition, env)) return this.interpret(term.then, env)
@@ -73,7 +73,7 @@ export class Interpreter {
         }
     }
 
-    interpretBinary(left: Term, right: Term, operation: BinaryOp): Val {
+    interpretBinary(left: Val, right: Val, operation: BinaryOp): Val {
         switch (operation) {
             case BinaryOp.ADD: {
                 let value = this.assertInt(left) + this.assertInt(right)
@@ -132,24 +132,24 @@ export class Interpreter {
         }
     }
 
-    assertInt(term: Term): number {
-        let int = term.kind === "Int" ? term.value : null
-        if (int == null) throw new ErrorInterpreter("Invalid operator", term.location.start, term.location.end)
+    assertInt(value: Val): number {
+        let int = value.kind === "number" ? value.value : null
+        if (int == null) throw new ErrorInterpreter("Invalid operator")
         return int
     }
 
-    assertBoolean(term: Term): boolean {
-        let bool = term.kind === "Bool" ? term.value : null
-        if (bool == null) throw new ErrorInterpreter("Invalid operator", term.location.start, term.location.end)
+    assertBoolean(value: Val): boolean {
+        let bool = value.kind === "boolean" ? value.value : null
+        if (bool == null) throw new ErrorInterpreter("Invalid operator")
         return bool
     }
 
-    assertEqual(left: Term, right: Term): boolean  {
-        let lop = left.kind === "Bool" || left.kind === "Str" || left.kind === "Int" ? { kind: left.kind, value: left.value }: null
-        let rop = right.kind === "Bool" || right.kind === "Str" || right.kind === "Int" ? { kind: right.kind, value: right.value } : null
+    assertEqual(left: Val, right: Val): boolean  {
+        let lop = left.kind === "boolean" || left.kind === "string" || left.kind === "number" ? { kind: left.kind, value: left.value }: null
+        let rop = right.kind === "boolean" || right.kind === "string" || right.kind === "number" ? { kind: right.kind, value: right.value } : null
 
-        if (lop == null) throw new ErrorInterpreter("Invalid operator", left.location.start, left.location.end)
-        if (rop == null) throw new ErrorInterpreter("Invalid operator", right.location.start, right.location.end)
+        if (lop == null) throw new ErrorInterpreter("Invalid operator")
+        if (rop == null) throw new ErrorInterpreter("Invalid operator")
         
         if (lop.kind == rop.kind) {
             return rop.value == lop.value

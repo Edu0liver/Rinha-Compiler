@@ -67,19 +67,19 @@ export type Int = {
 }
 
 export enum BinaryOp {
-    ADD,
-    SUB,
-    MUL,
-    DIV,
-    REM,
-    EQ,
-    NEQ,
-    LT,
-    GT,
-    LTE,
-    GTE,
-    AND,
-    OR,
+    ADD = "Add",
+    SUB = "SUB",
+    MUL = "MUL",
+    DIV = "DIV",
+    REM = "REM",
+    EQ = "EQ",
+    NEQ = "NEQ",
+    LT = "LT",
+    GT = "GT",
+    LTE = "LTE",
+    GTE = "GTE",
+    AND = "AND",
+    OR = "OR",
 }
 
 export type Bool = {
