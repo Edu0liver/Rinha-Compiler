@@ -21,6 +21,7 @@ docker run --name rinha-ts -d -p 3000:3000 rinha-ts
 ```
 
 Para ver o resultado:
+
 ```cmd
 docker logs rinha-ts
 ```
