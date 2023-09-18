@@ -28,13 +28,22 @@ export class Interpreter {
             case 'Binary':
                 return this.interpretBinary(term.lhs, term.rhs, term.op)
                 
-            // case 'If':
+            case 'If':
+                if (this.interpret(term.condition, env)) return this.interpret(term.then, env)
+                else return this.interpret(term.otherwise, env)
                 
-            // case 'Tuple':
+            case 'Tuple':
+                return {
+                    kind: "tuple",
+                    fst: this.interpret(term.first, env), 
+                    snd: this.interpret(term.second, env)
+                }
                 
-            // case 'First':
+            case 'First':
+                return this.interpret(term.value, env)
                 
-            // case 'Second':
+            case 'Second':
+                return this.interpret(term.value, env)
 
             // case 'Var':
                 
