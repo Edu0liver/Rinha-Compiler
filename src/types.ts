@@ -8,7 +8,7 @@ export type Val =
 
 export type ClosureValue = {
     body: Term;
-    params: Parameter[]
+    params: string[]
     mem: Memory
 }
 

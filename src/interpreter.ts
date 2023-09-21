@@ -52,19 +52,22 @@ export class Interpreter {
             }
                 
             case 'Let': {
+                let clonedMem = this.cloneMem(memory);
                 let name = term.name.text
                 let value = this.interpret(term.value, memory)
-                memory[name] = value
+                clonedMem[name] = value
 
-                return this.interpret(term.next, memory)
+                return this.interpret(term.next, clonedMem)
             }
                 
             case 'Function':
+                let params = term.parameters.map(param => param.text)
+
                 return {
                     kind: "closure",
                     value: {
                         body: term.value,
-                        params: term.parameters,
+                        params,
                         mem: memory,
                     }
                 }
@@ -74,12 +77,13 @@ export class Interpreter {
 
                 switch (closure.kind) {
                     case "closure":
+                        let clonedMem = this.cloneMem(memory);
+
                         for (let [ p_index, param ] of closure.value.params.entries()) {
-                            memory[param.text] = this.interpret(term.arguments[p_index], memory)
+                            clonedMem[param] = this.interpret(term.arguments[p_index], clonedMem)
                         }
 
-                        return this.interpret(closure.value.body, memory)
-
+                        return this.interpret(closure.value.body, clonedMem)
                     default: 
                         throw new ErrorInterpreter("Not a function")
                 }
@@ -182,5 +186,9 @@ export class Interpreter {
         }
 
         throw new ErrorInterpreter("Invalid operation, unmatch type")
+    }
+
+    cloneMem(mem: Memory): Memory {
+        return { ...mem }
     }
 }
