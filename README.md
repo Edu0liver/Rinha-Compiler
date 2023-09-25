@@ -17,17 +17,13 @@ docker build --tag rinha-repo .
 ```
 
 ```cmd
-docker run --name rinha-repo -d -p 3000:3000 rinha-repo
-```
-
-```cmd
 docker run -v ./source.rinha.json:/var/rinha/source.rinha.json --memory=2gb --cpus=2 --name rinha-repo -d -p 3000:3000 rinha-repo
 ```
 
 Para ver o resultado:
 
 ```cmd
-docker logs rinha-ts
+docker logs rinha-repo
 ```
 
 ## Sobre:
